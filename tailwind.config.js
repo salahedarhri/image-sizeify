@@ -11,6 +11,7 @@ export default {
     extend: {
       fontFamily:{
         lato:['Lato'],
+        barlow:['Barlow'],
       },
       colors:{
         darkShade:'#4D869C',
