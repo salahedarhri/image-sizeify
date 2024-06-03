@@ -11,21 +11,29 @@ class LandingPage extends Component
 {
     use WithFileUploads;
     public $photo;
+    public $imageInfo = [];
     public $statut = '';
+    public $widths = ['400','600','800','1200','1600'];
+    public $availableWidths = [];
 
     protected $rules = [
         'photo' => 'required|image|max:20400',
+        'widths' => 'required|array|min:1',
     ];
 
-    // protected $listeners = ['message'];
+    public function updatedPhoto(){
+        if ($this->photo) {
+            $this->imageInfo = getimagesize($this->photo->getRealPath());
+        }
 
-    // public function message( $message ){
-    //     $this->statut = $message;
-    // }
+        if ($this->imageInfo) {
+            $imageWidth = $this->imageInfo[0];
 
-    // public function mount(){
-    //     $this->statut = 'Pret a l\'emploi';
-    // }
+            // Filter available widths
+            $this->availableWidths = array_filter($this->widths, function($width) use ($imageWidth) {
+                return $width <= $imageWidth;   });
+        }
+    }
 
     public function scaleImage(){
         $this->validate($this->rules);
@@ -35,19 +43,9 @@ class LandingPage extends Component
 
         try{
             $manager = new ImageManager(new Driver());
-
-            // $this->emit('message','Traitement d\'image(s)...');
             $image = $manager->read(storage_path('app/public/photos/'.$nom ));
-            sleep(1);
-
-            // $this->emit('message','Changement des dimensions...');
             $image->scale(height: 50);
-
-            // $this->emit('message','Sauvegarde d\'image(s)');
             $image->save(storage_path('app/public/photos_edited/'.$nom ));
-            sleep(1);
-
-            // $this->emit('message','Opération est éxecutée avec succès !');
 
         }catch(\Exception $e){
             dump( $e->getMessage());

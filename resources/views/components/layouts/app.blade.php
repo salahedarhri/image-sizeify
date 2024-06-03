@@ -9,9 +9,9 @@
         @vite(['resources/css/app.css','resources/js/app.js'])
 
     </head>
-    <body class="bg-gradient-to-r from-bgShade to-darkShade antialiased font-lato">
+    <body class="bg-gradient-to-r from-darkShade via-bgShade to-darkShade noise">
   
-        <main class="mt-20">
+        <main class="my-20 antialiased font-lato">
             {{ $slot }}
         </main>
     </body>
