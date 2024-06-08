@@ -6,7 +6,7 @@
             <p class="text-center py-2 text-lg ">Upload our photos, and we'll adapt them for your website where you'll download all the different formats of your pictures adapted to multiple devices.</p>
         </article>
     
-        <div x-on:livewire-upload-progress="progress = $event.detail.progress" class="w-full flex flex-row max-md:flex-col justify-center align-center p-3 gap-3">
+        <div x-on:livewire-upload-progress="progress = $event.detail.progress" class="w-full flex flex-col justify-center align-center p-3 gap-3">
             <form wire:submit.prevent="scaleImage" enctype="multipart/form-data" class="w-full flex flex-col justify-center items-center gap-2">
                 <h4 class="text-lg font-semibold text-darkShade underline font-barlow">Upload Image :</h4>
     
@@ -41,13 +41,13 @@
                 </div>
                 @endif
     
-                @if($availableWidths)
+                @if($photo && $widths)
                     <h4 class="font-semibold text-darkShade underline font-barlow">Available Widths <i>(pixels)</i>:</h4>
-                    <label for="widths" class="flex flex-row max-sm:flex-col gap-3 p-1 items-center">
-                        @foreach ($availableWidths as $w)
+                    <label for="availableWidths" class="flex flex-row max-sm:flex-col gap-3 p-1 items-center">
+                        @foreach ($widths as $w)
                         <div class="flex items-center pb-2">
-                            <input id="widths" wire:model="widths" type="checkbox" value="{{ $w }}" class="w-4 h-4 max-sm:w-5 max-sm:h-5 text-mediumShade bg-gray-100 border-gray-300 rounded focus:ring-mediumShade dark:focus:ring-mediumShade dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                            <label for="widths" class="ms-2 font-medium text-gray-900 dark:text-gray-300 font-barlow">{{ $w }}px</label>
+                            <input id="widths" wire:model.live="availableWidths" type="checkbox" value="{{ $w }}" class="w-4 h-4 max-sm:w-5 max-sm:h-5 text-mediumShade bg-gray-100 border-gray-300 rounded focus:ring-mediumShade dark:focus:ring-mediumShade dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                            <label for="availableWidths" class="ms-2 font-medium text-gray-900 dark:text-gray-300 font-barlow">{{ $w }}px</label>
                         </div>
                         @endforeach
                     </label>
@@ -74,7 +74,6 @@
                             <p class="ml-2">Download All</p>
                         </button>
                     </div>
-            
                 </div>
             @endif
         </div>
@@ -83,7 +82,6 @@
     {{-- Download Section  --}}
     <section x-cloak x-show="open" class="max-w-5xl mx-auto bg-white p-3 rounded-lg my-3 shadow-lg subpixel-antialiased">
         <h4 class="text-lg text-center font-semibold text-darkShade underline font-barlow">Download Images :</h4>
-
         <div class="max-w-xl mx-auto flex flex-col items-center p-2 gap-1 font-barlow">
             <button wire:click="downloadImages" class="flex flex-row items-center py-2 px-6 bg-gradient-to-r  from-darkShade to-mediumShade hover:saturate-150 rounded shadow text-white font-semibold mt-4">
                 <svg width="26px" height="26px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -93,7 +91,6 @@
                 <p class="ml-2">Download All</p>
             </button>
         </div>
-
     </section>
 
 </div>
