@@ -10,65 +10,71 @@ use Livewire\WithFileUploads;
 class LandingPage extends Component
 {
     use WithFileUploads;
-    public $photo;
-    public $imageInfo = [];
+    public $photos;
+    public $imageInfos = [];
     public $statut = '';
-    public $widths = ['400','600','800','1200','1600'];
+    public $selectedWidths = [];
+    public $allWidths = ['400','600','800','1200','1600'];
     public $availableWidths = [];
     public $download = false;
     public $nom = '';
     public $extension = '';
 
     protected $rules = [
-        'photo' => 'required|image|max:20400',
+        'photos.*' => 'required|image|max:20400',
         'widths' => 'required|array|min:1',
     ];
 
-    public function updatedPhoto(){
-        if ($this->photo) {
-            $this->imageInfo = getimagesize($this->photo->getRealPath());   }
+    public function updatedPhotos(){
+        if ($this->photos){
+            foreach($this->photos as $index=>$photo){
+                $this->imageInfos[] = getimagesize($photo->getRealPath());
+                $this->availableWidths[$index] = []; 
+                $this->selectedWidths[$index] = [];
+                
+                $imageWidth = $this->imageInfos[$index][0];
+                $this->availableWidths[$index] = array_filter($this->allWidths, function($width) use ($imageWidth) {
+                    return $width <= $imageWidth;
+                });
+            }
 
-        if ($this->imageInfo) {
-            $imageWidth = $this->imageInfo[0];
-            $this->widths = array_filter($this->widths, function($width) use ($imageWidth) {
-                return $width <= $imageWidth;   });
+            // dd($this->availableWidths, $this->photos);
         }
     }
 
     public function scaleImage(){
-        $this->validate($this->rules);
-        $this->nom = pathinfo($this->photo->getClientOriginalName(), PATHINFO_FILENAME);
-        $this->extension = $this->photo->getClientOriginalExtension();
+
+        dd($this->selectedWidths, $this->availableWidths );
+
+        // $this->validate($this->rules);
+        // $this->nom = pathinfo($this->photo->getClientOriginalName(), PATHINFO_FILENAME);
+        // $this->extension = $this->photo->getClientOriginalExtension();
     
-        $this->photo->storeAs('photos', $this->nom . '.' . $this->extension, 'public'); 
+        // $this->photo->storeAs('photos', $this->nom . '.' . $this->extension, 'public'); 
     
-        if ($this->extension == 'png') {
-            // Convert to .jpeg, store image, and destroy gd file to free memory
-            $image_gd = @imagecreatefrompng(storage_path('app/public/photos/' . $this->nom . '.' . $this->extension));
-            imagejpeg($image_gd, storage_path('app/public/photos/' . $this->nom . '.jpg'));
-            imagedestroy($image_gd);
-            $this->extension = 'jpg';
-        }
+        // if ($this->extension == 'png') {
+        //     // Convert to .jpeg, store image, and destroy gd file to free memory
+        //     $image_gd = @imagecreatefrompng(storage_path('app/public/photos/' . $this->nom . '.' . $this->extension));
+        //     imagejpeg($image_gd, storage_path('app/public/photos/' . $this->nom . '.jpg'));
+        //     imagedestroy($image_gd);
+        //     $this->extension = 'jpg';
+        // }
     
-        try {
-            $manager = new ImageManager(new Driver());
-            $image = $manager->read(storage_path('app/public/photos/' . $this->nom . '.' . $this->extension));
+        // try {
+        //     $manager = new ImageManager(new Driver());
+        //     $image = $manager->read(storage_path('app/public/photos/' . $this->nom . '.' . $this->extension));
             
-            if ($this->availableWidths) {
-                foreach ($this->availableWidths as $width) {
-                    $resizedImage = clone $image;
-                    $resizedImage->scale(width: $width);
-                    $resizedImageName = $this->nom . '-' . $width . 'w.' . $this->extension;
-                    $resizedImage->save(storage_path('app/public/photos_edited/' . $resizedImageName));
-                }
-            }
+        //     if ($this->availableWidths) {
+        //         foreach ($this->availableWidths as $width) {
+        //             $resizedImage = clone $image;
+        //             $resizedImage->scale(width: $width);
+        //             $resizedImageName = $this->nom . '-' . $width . 'w.' . $this->extension;
+        //             $resizedImage->save(storage_path('app/public/photos_edited/' . $resizedImageName));
+        //         }}
     
-            $this->statut = 'Toutes les images ont été redimensionnées avec succès !';
-            $this->download = true;
-    
-        } catch (\Exception $e) {
-            dump($e->getMessage());
-        }
+        //     $this->statut = 'Toutes les images ont été redimensionnées avec succès !';
+        //     $this->download = true;
+        // } catch (\Exception $e) {   dump($e->getMessage()); }
     }
     
 
