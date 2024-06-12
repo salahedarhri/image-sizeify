@@ -17,13 +17,24 @@ class LandingPage extends Component
     public $allWidths = ['400','600','800','1200','1600'];
     public $availableWidths = [];
     public $download = false;
-    public $nom = '';
-    public $extension = '';
+    public $noms = [];
+    public $extensions = [];
 
     protected $rules = [
-        'photos.*' => 'required|image|max:20400',
-        'widths' => 'required|array|min:1',
+        'photos.*' => 'required|image|max:10400',
+        'selectedWidths' => 'required|array',
+        'selectedWidths.*' => 'required|array|min:1',
     ];
+
+    protected $messages = [
+        'photos.*.required' => 'Chaque photo est requise.',
+        'photos.*.image' => 'Chaque fichier doit être une image.',
+        'photos.*.max' => 'Chaque image ne doit pas dépasser 10 Mo.',
+        'selectedWidths.required' => 'Les sélections de largeur sont requises.',
+        'selectedWidths.*.required' => 'Au moins une largeur doit être sélectionnée pour chaque image.',
+        'selectedWidths.*.min' => 'Vous devez sélectionner au moins une largeur pour chaque image.',
+    ];
+    
 
     public function updatedPhotos(){
         if ($this->photos){
@@ -32,49 +43,45 @@ class LandingPage extends Component
                 $this->availableWidths[$index] = []; 
                 $this->selectedWidths[$index] = [];
                 
+                //Filtering the available widths for each photo
                 $imageWidth = $this->imageInfos[$index][0];
-                $this->availableWidths[$index] = array_filter($this->allWidths, function($width) use ($imageWidth) {
-                    return $width <= $imageWidth;
-                });
+                $this->availableWidths[$index] = array_filter($this->allWidths,
+                     function($width) use ($imageWidth) {
+                        return $width <= $imageWidth;
+                    });
             }
-
-            // dd($this->availableWidths, $this->photos);
         }
     }
 
     public function scaleImage(){
+        $this->validate($this->rules, $this->messages);
+        $manager = new ImageManager(new Driver()); //Initialiser Intervention Image
 
-        dd($this->selectedWidths, $this->availableWidths );
+        try {
+            foreach($this->photos as $index=>$photo){
+                $this->noms[$index] = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
+                $this->extensions[$index] = $photo->getClientOriginalExtension();
 
-        // $this->validate($this->rules);
-        // $this->nom = pathinfo($this->photo->getClientOriginalName(), PATHINFO_FILENAME);
-        // $this->extension = $this->photo->getClientOriginalExtension();
-    
-        // $this->photo->storeAs('photos', $this->nom . '.' . $this->extension, 'public'); 
-    
-        // if ($this->extension == 'png') {
-        //     // Convert to .jpeg, store image, and destroy gd file to free memory
-        //     $image_gd = @imagecreatefrompng(storage_path('app/public/photos/' . $this->nom . '.' . $this->extension));
-        //     imagejpeg($image_gd, storage_path('app/public/photos/' . $this->nom . '.jpg'));
-        //     imagedestroy($image_gd);
-        //     $this->extension = 'jpg';
-        // }
-    
-        // try {
-        //     $manager = new ImageManager(new Driver());
-        //     $image = $manager->read(storage_path('app/public/photos/' . $this->nom . '.' . $this->extension));
+                $photo->storeAs('photos', $this->noms[$index] . '.' . $this->extensions[$index], 'public'); 
+
+                // Convert to .jpeg, store image, and destroy gd file to free memory
+                if ($this->extensions[$index] == 'png') {
+                    $image_gd = @imagecreatefrompng(storage_path('app/public/photos/'.$this->noms[$index].'.'.$this->extensions[$index]));
+                    imagejpeg($image_gd, storage_path('app/public/photos/' . $this->noms[$index] . '.jpg'));
+                    imagedestroy($image_gd);
+                }
+
+                $images[$index] = $manager->read(storage_path('app/public/photos/'.$this->noms[$index].'.'.$this->extensions[$index]));
+                foreach ($this->selectedWidths[$index] as $width) {
+                    $resizedImages[$index] = clone $images[$index];
+                    $resizedImages[$index]->scale(width: $width);
+                    $resizedImagesNames[$index] = $this->noms[$index] . '-' . $width . 'w.' . $this->extensions[$index];
+                    $resizedImages[$index]->save(storage_path('app/public/photos_edited/' . $resizedImagesNames[$index]));
+                }
+            }
             
-        //     if ($this->availableWidths) {
-        //         foreach ($this->availableWidths as $width) {
-        //             $resizedImage = clone $image;
-        //             $resizedImage->scale(width: $width);
-        //             $resizedImageName = $this->nom . '-' . $width . 'w.' . $this->extension;
-        //             $resizedImage->save(storage_path('app/public/photos_edited/' . $resizedImageName));
-        //         }}
-    
-        //     $this->statut = 'Toutes les images ont été redimensionnées avec succès !';
-        //     $this->download = true;
-        // } catch (\Exception $e) {   dump($e->getMessage()); }
+            $this->statut = 'Toutes les images ont été redimensionnées avec succès !';
+        } catch (\Exception $e) {   dump($e->getMessage()); }
     }
     
 

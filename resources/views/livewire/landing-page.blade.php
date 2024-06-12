@@ -1,4 +1,8 @@
-<div x-data="{ progress:'', open:$wire.entangle('download') }" class="subpixel-antialiased">
+<div 
+x-data="{ progress:''
+{{-- , open:$wire.entangle('download') --}}
+ }" 
+class="subpixel-antialiased">
 
     <div class="max-w-5xl m-auto bg-white p-3 rounded-lg my-3 shadow-lg">
         <article class="max-w-xl mx-auto flex flex-col items-center p-2 gap-1 font-barlow">
@@ -22,51 +26,38 @@
                         <input id="photos" type="file" class="hidden" accept="image/png, image/jpeg" wire:model="photos" name="photos" id="photos" multiple/>
                     </label>
                 </div> 
-                @error('photo')<p class="text-red-500 font-semibold text-sm p-1">{{ $message }}</p>@enderror
+                @error('photos.*')<p class="text-red-500 font-semibold text-sm p-1">{{ $message }}</p>@enderror
                 <p wire:loading wire:target="photos" class="text-teal-600 font-semibold text-sm p-1">Chargement...<span x-text="progress"></span>%</p>
     
                 @if($photos)
-                <h4 class="font-semibold text-darkShade underline font-barlow">Preview :</h4>
-                @foreach ($photos as $index => $photo)
-                    <div class="max-w-2xl flex flex-row items-center gap-2 bg-green-500 bg-opacity-10 border-2 border-green-600 border-opacity-10 rounded-lg p-2 mb-4">
-                        <img class="min-w-md h-36 mx-auto rounded-lg" src="{{ $photo->temporaryUrl() }}" alt="Uploaded photo">
-                        
-                        @if(isset($imageInfos[$index]))
-                            <div class="flex flex-col p-2 gap-1 font-barlow">
-                                <span class="underline font-semibold text-green-700">Image infos :</span>
-                                <span class="text-sm"><b class="font-semibold text-green-700">&#9656; Resolution :</b> {{ $imageInfos[$index][0] }} x {{ $imageInfos[$index][1] }} pixels</span>
-                                <span class="text-sm"><b class="font-semibold text-green-700">&#9656; Type :</b> {{ $imageInfos[$index]['mime'] }}</span>
-
-                                @if( $availableWidths)
-                                <div class="flex flex-col p-2 gap-1 pb-2">
-                                    <span class="underline font-semibold text-green-700">Available Widths :</span>
-                                    <div class="flex flex-row items-center gap-2 p-2">
-                                        @foreach ($availableWidths[$index] as $width)
-                                        <input wire:key="width-{{ $index }}-{{ $width }}" id="widths" wire:model.live="selectedWidths.{{ $index }}.{{ $width }}" type="checkbox" value="{{ $width }}" class="w-4 h-4 max-sm:w-5 max-sm:h-5 text-mediumShade bg-gray-100 border-gray-300 rounded focus:ring-mediumShade dark:focus:ring-mediumShade dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                                        <label for="selectedWidths-{{ $index }}-{{ $width }}" class="text-sm text-gray-900 dark:text-gray-300 font-barlow">{{ $width }}px</label>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
+                    <h4 class="font-semibold text-darkShade underline font-barlow">Preview :</h4>
+                    @foreach ($photos as $index => $photo)
+                        <div class="max-w-2xl flex flex-row items-center gap-2 bg-green-500 bg-opacity-10 border-2 border-green-600 border-opacity-10 rounded-lg px-2">
+                            <img class="min-w-md h-36 mx-auto rounded-lg" src="{{ $photo->temporaryUrl() }}" alt="Uploaded photo">
+                            @if(isset($imageInfos[$index]))
+                                <div class="flex flex-col p-2 gap-1 font-barlow">
+                                    <span class="underline font-semibold text-green-700">Image infos :</span>
+                                    <span class="text-sm"><b class="font-semibold text-green-700">&#9656; Resolution :</b> {{ $imageInfos[$index][0] }} x {{ $imageInfos[$index][1] }} pixels</span>
+                                    <span class="text-sm"><b class="font-semibold text-green-700">&#9656; Type :</b> {{ $imageInfos[$index]['mime'] }}</span>
+                                    @if( $availableWidths)
+                                        <div class="flex flex-col p-2 gap-1 pb-2">
+                                            <span class="underline font-semibold text-green-700">Available Widths :</span>
+                                            <div class="flex flex-row items-center gap-2 p-2">
+                                                @foreach ($availableWidths[$index] as $width)
+                                                    <input wire:key="width-{{ $index }}-{{ $width }}" id="widths" wire:model.live="selectedWidths.{{ $index }}" type="checkbox" value="{{ $width }}" class="w-4 h-4 max-sm:w-5 max-sm:h-5 text-mediumShade bg-gray-100 border-gray-300 rounded focus:ring-mediumShade dark:focus:ring-mediumShade dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                                    <label for="selectedWidths-{{ $index }}-{{ $width }}" class="text-sm text-gray-900 dark:text-gray-300 font-barlow">{{ $width }}px</label>
+                                                @endforeach
+                                            </div>
+                                            @error('selectedWidths.*.*')<p class="text-red-500 font-semibold text-sm p-1">{{ $message }}</p>@enderror
+                                            @error('selectedWidths')<p class="text-red-500 font-semibold text-sm p-1">{{ $message }}</p>@enderror
+                                            @error('selectedWidths.*')<p class="text-red-500 font-semibold text-sm p-1">{{ $message }}</p>@enderror
+                                        </div>
+                                    @endif
                             </div>
-                        @endif
-
-
-                    </div>
-                @endforeach
-            @endif
-    
-                {{-- @if($photos && $widths)
-                    <h4 class="font-semibold text-darkShade underline font-barlow">Available Widths <i>(pixels)</i>:</h4>
-                    <label for="availableWidths" class="flex flex-row max-sm:flex-col gap-3 p-1 items-center">
-                        @foreach ($widths as $w)
-                        <div class="flex items-center pb-2">
-                            <input id="widths" wire:model.live="availableWidths" type="checkbox" value="{{ $w }}" class="w-4 h-4 max-sm:w-5 max-sm:h-5 text-mediumShade bg-gray-100 border-gray-300 rounded focus:ring-mediumShade dark:focus:ring-mediumShade dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                            <label for="availableWidths" class="ms-2 font-medium text-gray-900 dark:text-gray-300 font-barlow">{{ $w }}px</label>
+                            @endif
                         </div>
-                        @endforeach
-                    </label>
-                @endif --}}
+                    @endforeach
+                @endif
     
                 <button type="submit" class="flex flex-row items-center py-2 px-6 bg-gradient-to-r  from-darkShade to-mediumShade hover:saturate-150 rounded shadow text-white font-semibold mt-4">
                     <svg width="26px" height="26px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -78,8 +69,8 @@
             </form>
             
             @if($statut)
-                <div class="bg-white rounded-md shadow-md p-2">
-                    <span class="text-center font-semibold text-darkShade">{{ $statut }}</span>
+                <div class="max-w-2xl mx-auto flex flex-col items-center border-2 bg-cyan-100 border-cyan-200 rounded-md shadow-md p-2 mt-2">
+                    <span class="text-center font-semibold text-darkShade p-2">{{ $statut }}</span>
                     <div class="max-w-xl mx-auto flex flex-col items-center p-2 gap-1 font-barlow">
                         <button wire:click="downloadImages" class="flex flex-row items-center py-2 px-6 bg-gradient-to-r  from-darkShade to-mediumShade hover:saturate-150 rounded shadow text-white font-semibold mt-4">
                             <svg width="26px" height="26px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -94,7 +85,7 @@
         </div>
     </div>
 
-    {{-- Download Section  --}}
+    {{-- Download Section 
     <section x-cloak x-show="open" class="max-w-5xl mx-auto bg-white p-3 rounded-lg my-3 shadow-lg subpixel-antialiased">
         <h4 class="text-lg text-center font-semibold text-darkShade underline font-barlow">Download Images :</h4>
         <div class="max-w-xl mx-auto flex flex-col items-center p-2 gap-1 font-barlow">
@@ -106,6 +97,6 @@
                 <p class="ml-2">Download All</p>
             </button>
         </div>
-    </section>
+    </section> --}}
 
 </div>
