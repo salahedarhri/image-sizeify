@@ -21,7 +21,7 @@ class LandingPage extends Component
     public $extensions = [];
 
     protected $rules = [
-        'photos.*' => 'required|image|max:10400',
+        'photos.*' => 'required|image|max:5150',
         'selectedWidths' => 'required|array',
         'selectedWidths.*' => 'required|array|min:1',
     ];
@@ -29,7 +29,7 @@ class LandingPage extends Component
     protected $messages = [
         'photos.*.required' => 'Chaque photo est requise.',
         'photos.*.image' => 'Chaque fichier doit être une image.',
-        'photos.*.max' => 'Chaque image ne doit pas dépasser 10 Mo.',
+        'photos.*.max' => 'Chaque image ne doit pas dépasser 5 Mo.',
         'selectedWidths.required' => 'Les sélections de largeur sont requises.',
         'selectedWidths.*.required' => 'Au moins une largeur doit être sélectionnée pour chaque image.',
         'selectedWidths.*.min' => 'Vous devez sélectionner au moins une largeur pour chaque image.',
@@ -37,25 +37,36 @@ class LandingPage extends Component
     
 
     public function updatedPhotos(){
+        $this->imageInfos = []; //Mettre à jour les infos à chaque preload
+        $this->statut = ''; //Réinitialiser pour la prochaine upload
+        $this->noms = [];
+
         if ($this->photos){
             foreach($this->photos as $index=>$photo){
                 $this->imageInfos[] = getimagesize($photo->getRealPath());
+                $this->noms[$index] = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
                 $this->availableWidths[$index] = []; 
                 $this->selectedWidths[$index] = [];
                 
                 //Filtering the available widths for each photo
                 $imageWidth = $this->imageInfos[$index][0];
                 $this->availableWidths[$index] = array_filter($this->allWidths,
-                     function($width) use ($imageWidth) {
-                        return $width <= $imageWidth;
-                    });
+                     function($width) use ($imageWidth) {   return $width <= $imageWidth;  });
             }
         }
     }
 
     public function scaleImage(){
+        //Delete the images that can't be resized
+        if ($this->photos){
+            foreach($this->photos as $index=>$photo){
+                if( empty($availableWidths[$index])){   unset($this->photos[$index]);  }
+            }
+        }
+
+         //Initialiser Intervention Image + validation
         $this->validate($this->rules, $this->messages);
-        $manager = new ImageManager(new Driver()); //Initialiser Intervention Image
+        $manager = new ImageManager(new Driver());
 
         try {
             foreach($this->photos as $index=>$photo){
@@ -80,50 +91,47 @@ class LandingPage extends Component
                 }
             }
             
-            $this->statut = 'Toutes les images ont été redimensionnées avec succès !';
+            $this->statut = 'Les images suivantes ont été redimensionnées avec succès :';
         } catch (\Exception $e) {   dump($e->getMessage()); }
     }
     
 
     public function downloadImages(){
-        if ($this->availableWidths) {
-            if (sizeof($this->availableWidths) > 1) {
-                $zip = new \ZipArchive();
-                $zipFileName = 'ImageSizeify-'.$this->nom.'-'.time().'.zip';
-                $zipFilePath = storage_path('app/public/photos_edited/' . $zipFileName);
-    
-                if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
-                    foreach ($this->availableWidths as $width) {
-                        $resizedImageName = $this->nom . '-' . $width . 'w.' .$this->extension;
-                        $filePath = storage_path('app/public/photos_edited/' .$resizedImageName);
-                        if (file_exists($filePath)) {
-                            $zip->addFile($filePath, basename($filePath));
-                        }
-                    }
-                    $zip->close();
-                } else {    return response()->json(['error' => 'Erreur de création de fichier zip'], 500);}
-    
-                // Delete the original image
-                $originalImg = storage_path('app/public/photos/'.$this->nom.'.'.$this->extension);
-                if (file_exists($originalImg)) {
-                    unlink($originalImg);   }
-    
-                // Delete the resized images after creating the ZIP file
-                foreach ($this->availableWidths as $width) {
-                    $resizedImg = storage_path('app/public/photos_edited/' . $this->nom . '-' .$width.'w.'.$this->extension);
-                    if (file_exists($resizedImg)) { unlink($resizedImg);}
-                }
-    
-                $this->download = false;
-                return response()->download($zipFilePath)->deleteFileAfterSend(true);
-            } else {
-                foreach ($this->availableWidths as $width) {
-                    $resizedImageName = $this->nom . '-' . $width . 'w.' . $this->extension;
 
-                    $this->download = false;
-                    return response()->download(storage_path('app/public/photos_edited/' . $resizedImageName))->deleteFileAfterSend(true);
+        //Single Resized Image Exception 
+        if( count($this->photos) == 1 && count($this->selectedWidths[count($this->photos)-1]) == 1){
+            $resizedImageName = $this->noms[0] . '-' . $this->selectedWidths[0][0] . 'w.' . $this->extensions[0];
+            return response()->download(storage_path('app/public/photos_edited/' . $resizedImageName))->deleteFileAfterSend(true);
+
+        }else{
+            //Multiple Images resized dans un fichier zip
+            $zip = new \ZipArchive();
+            $zipNom = 'ImageSizeify-'.time().'.zip';
+            $zipChemin = storage_path('app/public/photos_edited/' . $zipNom);
+
+            if ($zip->open($zipChemin, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+                for ($index = 0; $index < count($this->photos); $index++) {
+                    foreach ($this->selectedWidths[$index] as $width) {
+                        $resizedImagesNames[$index] = $this->noms[$index] . '-' . $width . 'w.' .$this->extensions[$index];
+                        $imageChemin[$index] = storage_path('app/public/photos_edited/' .$resizedImagesNames[$index]);
+
+                        if (file_exists($imageChemin[$index])) {   $zip->addFile($imageChemin[$index], basename($imageChemin[$index])); }
+                    }
+                }
+                $zip->close();  }
+
+            // Delete the original image + resized images after creating the ZIP file
+            for ($index = 0; $index < count($this->photos); $index++) {
+                $originalImg = storage_path('app/public/photos/'.$this->noms[$index].'.'.$this->extensions[$index]);
+
+                if(file_exists($originalImg)) {    unlink($originalImg);    }
+                foreach ($this->selectedWidths[$index] as $width) {
+                    $resizedImg = storage_path('app/public/photos_edited/' . $this->noms[$index] . '-' .$width.'w.'.$this->extensions[$index]);
+                    if(file_exists($resizedImg)) {    unlink($resizedImg);  }
                 }
             }
+
+            return response()->download($zipChemin)->deleteFileAfterSend(true);
         }
     }
     
