@@ -6,19 +6,20 @@ use Livewire\Component;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
 
 class LandingPage extends Component
 {
     use WithFileUploads;
     public $photos;
     public $imageInfos = [];
-    public $statut = '';
+    public $allWidths = ['400','600','800','1200','1600','1800'];
     public $selectedWidths = [];
-    public $allWidths = ['400','600','800','1200','1600'];
     public $availableWidths = [];
-    public $download = false;
     public $noms = [];
     public $extensions = [];
+    public $statut = '';
+
 
     protected $rules = [
         'photos.*' => 'required|image|max:5150',
@@ -60,7 +61,14 @@ class LandingPage extends Component
         //Delete the images that can't be resized
         if ($this->photos){
             foreach($this->photos as $index=>$photo){
-                if( empty($availableWidths[$index])){   unset($this->photos[$index]);  }
+                if( empty($this->availableWidths[$index])){   
+                    unset($this->photos[$index]); 
+                    unset($this->noms[$index]);
+                    unset($this->extensions[$index]);
+                    unset($this->selectedWidths[$index]);
+                    unset($this->availableWidths[$index]);
+
+                }
             }
         }
 
@@ -89,12 +97,15 @@ class LandingPage extends Component
                     $resizedImagesNames[$index] = $this->noms[$index] . '-' . $width . 'w.' . $this->extensions[$index];
                     $resizedImages[$index]->save(storage_path('app/public/photos_edited/' . $resizedImagesNames[$index]));
                 }
+
+                // if( file_exists(storage_path('app/public/photos_edited/'.$this->noms[$index].'-'.min($this->selectedWidths[$index]). 'w.' .$this->extensions[$index]))){
+                //     $this->imagePreviews[] = Storage::url('photos_edited/'.$this->noms[$index].'-'.min($this->selectedWidths[$index]). 'w.' .$this->extensions[$index]);
+                // }
             }
-            
+
             $this->statut = 'Les images suivantes ont été redimensionnées avec succès :';
         } catch (\Exception $e) {   dump($e->getMessage()); }
     }
-    
 
     public function downloadImages(){
 
@@ -135,9 +146,7 @@ class LandingPage extends Component
         }
     }
     
-
-    public function render()
-    {
+    public function render(){
         return view('livewire.landing-page');
     }
 }
