@@ -13,11 +13,12 @@ class LandingPage extends Component
     use WithFileUploads;
     public $photos;
     public $imageInfos = [];
-    public $allWidths = ['400','600','800','1200','1600','1800'];
+    public $allWidths = ['400','600','800','1000','1200','1400','1600','1800'];
     public $selectedWidths = [];
     public $availableWidths = [];
     public $noms = [];
     public $extensions = [];
+    public $codes = [];
     public $statut = '';
 
 
@@ -28,12 +29,12 @@ class LandingPage extends Component
     ];
 
     protected $messages = [
-        'photos.*.required' => 'Chaque photo est requise.',
-        'photos.*.image' => 'Chaque fichier doit être une image.',
-        'photos.*.max' => 'Chaque image ne doit pas dépasser 5 Mo.',
-        'selectedWidths.required' => 'Les sélections de largeur sont requises.',
-        'selectedWidths.*.required' => 'Au moins une largeur doit être sélectionnée pour chaque image.',
-        'selectedWidths.*.min' => 'Vous devez sélectionner au moins une largeur pour chaque image.',
+        'photos.*.required' => 'Each photo is required.',
+        'photos.*.image' => 'Each file must be an image.',
+        'photos.*.max' => 'Each image must not exceed 5 MB.',
+        'selectedWidths.required' => 'Width selections are required.',
+        'selectedWidths.*.required' => 'At least one width must be selected for each image.',
+        'selectedWidths.*.min' => 'You must select at least one width for each image.',
     ];
     
 
@@ -41,6 +42,7 @@ class LandingPage extends Component
         $this->imageInfos = []; //Mettre à jour les infos à chaque preload
         $this->statut = ''; //Réinitialiser pour la prochaine upload
         $this->noms = [];
+        unset($this->codes);
 
         if ($this->photos){
             foreach($this->photos as $index=>$photo){
@@ -58,6 +60,7 @@ class LandingPage extends Component
     }
 
     public function scaleImage(){
+
         //Delete the images that can't be resized
         if ($this->photos){
             foreach($this->photos as $index=>$photo){
@@ -72,8 +75,16 @@ class LandingPage extends Component
             }
         }
 
+        // Réindexer
+        $this->photos = array_values($this->photos);
+        $this->noms = array_values($this->noms);
+        $this->extensions = array_values($this->extensions);
+        $this->selectedWidths = array_values($this->selectedWidths);
+        $this->availableWidths = array_values($this->availableWidths);
+
          //Initialiser Intervention Image + validation
         $this->validate($this->rules, $this->messages);
+
         $manager = new ImageManager(new Driver());
 
         try {
@@ -91,21 +102,27 @@ class LandingPage extends Component
                 }
 
                 $images[$index] = $manager->read(storage_path('app/public/photos/'.$this->noms[$index].'.'.$this->extensions[$index]));
+
+                $srcset = [];
+
                 foreach ($this->selectedWidths[$index] as $width) {
                     $resizedImages[$index] = clone $images[$index];
                     $resizedImages[$index]->scale(width: $width);
                     $resizedImagesNames[$index] = $this->noms[$index] . '-' . $width . 'w.' . $this->extensions[$index];
                     $resizedImages[$index]->save(storage_path('app/public/photos_edited/' . $resizedImagesNames[$index]));
+
+                    $srcset[] = "images/".$resizedImagesNames[$index]." ".$width."w";
                 }
 
-                // if( file_exists(storage_path('app/public/photos_edited/'.$this->noms[$index].'-'.min($this->selectedWidths[$index]). 'w.' .$this->extensions[$index]))){
-                //     $this->imagePreviews[] = Storage::url('photos_edited/'.$this->noms[$index].'-'.min($this->selectedWidths[$index]). 'w.' .$this->extensions[$index]);
-                // }
+                //Code Section :
+                $srcsetString = implode(', ', $srcset);
+                $minWidth = min($this->selectedWidths[$index]);
+                $this->codes[$index] = "<img src='images/" . $this->noms[$index] . "-" . $minWidth . "w." . $this->extensions[$index] . "' srcset='" . $srcsetString . "' alt='" . $this->noms[$index] . "'>";
             }
+                $this->statut = 'Images have been resized successfully !';
 
-            $this->statut = 'Les images suivantes ont été redimensionnées avec succès :';
-        } catch (\Exception $e) {   dump($e->getMessage()); }
-    }
+            } catch (\Exception $e) {   dump($e->getMessage()); }
+        }
 
     public function downloadImages(){
 
@@ -122,6 +139,7 @@ class LandingPage extends Component
 
             if ($zip->open($zipChemin, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
                 for ($index = 0; $index < count($this->photos); $index++) {
+
                     foreach ($this->selectedWidths[$index] as $width) {
                         $resizedImagesNames[$index] = $this->noms[$index] . '-' . $width . 'w.' .$this->extensions[$index];
                         $imageChemin[$index] = storage_path('app/public/photos_edited/' .$resizedImagesNames[$index]);
@@ -147,6 +165,7 @@ class LandingPage extends Component
     }
     
     public function render(){
-        return view('livewire.landing-page');
+        return view('livewire.landing-page',[
+        ]);
     }
 }

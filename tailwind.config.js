@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'selector',
+  darkMode: 'class',
   content: [
     "./resources/**/*.blade.php",
     "./resources/**/*.js",
@@ -14,10 +14,10 @@ export default {
         barlow:['Barlow'],
       },
       colors:{
-        darkShade:'#4D869C',
-        mediumShade:'#7AB2B2',
-        lightShade:'#EEF7FF',
-        bgShade:'#CDE8E5',
+        darkShade:'#3b414f',
+        mediumShade:'#708871',
+        lightShade:'#BEC6A0',
+        whiteShade:'#FEF3E2',
       }
     },
   },
