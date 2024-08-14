@@ -1,4 +1,4 @@
-<p align="center"><a href="https://www.linkedin.com/in/salaheddinarhrimaz" target="_blank"><img src="https://github.com/salahedarhri/image-sizeify/blob/main/IS%20banner.jpeg" width="800" alt="IS Logo"></a></p>
+<p align="center"><a href="https://www.linkedin.com/in/salaheddinarhrimaz" target="_blank"><img src="https://github.com/salahedarhri/image-sizeify/blob/main/IS%20banner.jpg" width="800" alt="IS Logo"></a></p>
 
 # Image Sizeify
 
