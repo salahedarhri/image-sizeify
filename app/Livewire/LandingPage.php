@@ -39,8 +39,11 @@ class LandingPage extends Component
     
 
     public function updatedPhotos(){
-        $this->imageInfos = []; //Mettre à jour les infos à chaque preload
-        $this->statut = ''; //Réinitialiser pour la prochaine upload
+
+        //Refresh errors, image infos & arrays
+        $this->resetErrorBag(); 
+        $this->imageInfos = []; 
+        $this->statut = ''; 
         $this->noms = [];
         unset($this->codes);
 
@@ -93,13 +96,6 @@ class LandingPage extends Component
                 $this->extensions[$index] = $photo->getClientOriginalExtension();
 
                 $photo->storeAs('photos', $this->noms[$index] . '.' . $this->extensions[$index], 'public'); 
-
-                // Convert to .jpeg, store image, and destroy gd file to free memory
-                if ($this->extensions[$index] == 'png') {
-                    $image_gd = @imagecreatefrompng(storage_path('app/public/photos/'.$this->noms[$index].'.'.$this->extensions[$index]));
-                    imagejpeg($image_gd, storage_path('app/public/photos/' . $this->noms[$index] . '.jpg'));
-                    imagedestroy($image_gd);
-                }
 
                 $images[$index] = $manager->read(storage_path('app/public/photos/'.$this->noms[$index].'.'.$this->extensions[$index]));
 

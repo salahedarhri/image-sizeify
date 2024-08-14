@@ -1,15 +1,14 @@
 <article x-data="{ progress:''}" class="subpixel-antialiased">
-    <div class="w-full mx-auto mt-24">
-
-        <section class="max-w-xl mx-auto flex flex-col items-center p-2 gap-1">
-            <h1 class="text-3xl text-center font-semibold text-darkShade dark:text-whiteShade py-2 font-barlow">Image Sizeify</h1>
+    <div class="w-full mx-auto">
+        <section class="max-w-xl mx-auto flex flex-col items-center p-2 gap-1 ">
+            <h1 class="text-3xl text-center font-semibold text-darkShade dark:text-whiteShade py-2 font-barlow mt-24">Image Sizeify</h1>
             <p class="text-center py-2 text-lg text-darkShade dark:text-whiteShade font-lato">Upload your photos, and we'll adapt them for your website where you'll download all the different formats of your pictures adapted to multiple devices.</p>
         </section>
     
-        <section x-on:livewire-upload-progress="progress = $event.detail.progress" class="w-full flex flex-col justify-center align-center p-3 gap-3">
+        <section x-on:livewire-upload-progress="progress = $event.detail.progress" class="max-w-5xl mx-auto flex flex-col justify-center align-center p-3 gap-3 mb-12">
             
             <form wire:submit.prevent="scaleImage" enctype="multipart/form-data" class="w-full flex flex-col justify-center place-items-center gap-2">
-    
+                
                 {{-- Drag & Drop Zone--}}
                 <div x-data="drop_file_component()" class="max-w-3xl mx-auto flex items-center justify-center w-full font-barlow">
                     <label 
@@ -25,7 +24,7 @@
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                             </svg>
                             <p class="mb-2 text-sm text-darkShade dark:text-whiteShade"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                            <p class="text-xs text-darkShade dark:text-whiteShade">SVG, PNG, JPG or GIF (MAX. 5Mo)</p>
+                            <p class="text-xs text-darkShade dark:text-whiteShade"> JPG, JPEG, PNG, BMP, SVG & WEBP (MAX. 5 Mo)</p>
                         </div>
 
                         {{-- Uploading Interface --}}
@@ -35,12 +34,12 @@
                             </svg>
                             <p class="mb-2 text-sm text-darkShade dark:text-whiteShade"><span class="font-semibold">Drop it here !</p>
                         </div>
-
-                        <input id="photos" type="file" class="hidden" accept="image/png, image/jpeg" wire:model.live="photos" multiple/>
+                        <input id="photos" type="file" class="hidden" wire:model.live="photos" multiple/>
                     </label>
                 </div> 
                 
                 @error('photos.*')<p class="text-red-600 dark:text-red-400 font-semibold text-sm p-1">{{ $message }}</p>@enderror
+                
                 <p wire:loading wire:target="photos" class="text-darkShade dark:text-lightShade font-semibold text-sm p-1">Chargement...<span x-text="progress"></span>%</p>
     
                 {{-- Pictures Informations --}}
@@ -87,12 +86,12 @@
                         </div>
                     @endforeach
 
-                    <button type="submit" class="font-barlow flex flex-row place-items-center py-2 px-6 bg-gradient-to-r from-darkShade to-mediumShade hover:saturate-150 dark:from-lightShade dark:to-mediumShade rounded shadow text-whiteShade dark:text-darkShade font-semibold mt-4 mx-auto">
+                    <button type="submit" class="font-barlow flex flex-row place-items-center py-2 px-6 bg-gradient-to-r from-darkShade to-mediumShade hover:saturate-150 dark:from-lightShade dark:to-whiteShade rounded shadow text-whiteShade dark:text-darkShade font-semibold mt-4 mx-auto">
                         <svg width="26px" height="26px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M15 21H9C6.17157 21 4.75736 21 3.87868 20.1213C3 19.2426 3 17.8284 3 15M21 15C21 17.8284 21 19.2426 20.1213 20.1213C19.8215 20.4211 19.4594 20.6186 19 20.7487" stroke="#EEF7FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M12 16V3M12 3L16 7.375M12 3L8 7.375" stroke="#EEF7FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <p class="uppercase ml-2">Upload</p>
+                        <p class="uppercase ml-2">Resize</p>
                     </button>
                 @endif
 
@@ -106,15 +105,23 @@
                         <ul class="text-darkShade dark:text-whiteShade font-barlow text-md w-full flex flex-col gap-1 p-3">
                             <li><span class="font-semibold">Image :</span> {{ $nom }}</li>
                             <li><span class="font-semibold">Width(s) :</span> @foreach($selectedWidths[$index] as $width) &#11049;&nbsp;{{ $width }} px @endforeach</li>
-                            <li x-data="{ copied: false }"  class="w-full flex flex-row justify-center place-items-center">
-                                <div class="scrollbar-thumb-mediumShade overflow-x-auto w-full bg-darkShade p-3 rounded-lg rounded-r-none text-whiteShade">
-                                    <pre><code x-ref="code" class="text-sm">{{  $codes[$index] }}</code></pre>
+                            <li x-data="{ copied: false }" class="w-full flex flex-col justify-center items-center mt-2">
+                                <div class="w-full flex flex-row justify-between rounded-t-md py-1 px-2 bg-darkShade dark:bg-mediumShade text-whiteShade text-sm">
+                                    <span>Code</span>
+                                    <button @click="navigator.clipboard.writeText($refs.code.innerText); copied = true; setTimeout(() => copied = false, 3000)"
+                                        class="text-sm flex flex-row justify-center align-middle gap-1">
+                                        <span class="font-semibold" x-show="!copied">Copy</span>
+                                        <span class="font-semibold" x-show="copied" x-transition>Copied!</span>
+                                        <svg class="w-6 h-6 text-whiteShade" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                            <path fill-rule="evenodd" d="M18 3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1V9a4 4 0 0 0-4-4h-3a1.99 1.99 0 0 0-1 .267V5a2 2 0 0 1 2-2h7Z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd" d="M8 7.054V11H4.2a2 2 0 0 1 .281-.432l2.46-2.87A2 2 0 0 1 8 7.054ZM10 7v4a2 2 0 0 1-2 2H4v6a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3Z" clip-rule="evenodd"/>
+                                          </svg>                                          
+                                    </button>
                                 </div>
-                                <button @click="navigator.clipboard.writeText($refs.code.innerText); copied = true; setTimeout(() => copied = false, 3000)"
-                                    class=" text-whiteShade bg-darkShade px-2 py-1 rounded-lg text-sm">
-                                    <span class="font-semibold" x-show="!copied">Copy</span>
-                                    <span class="font-semibold" x-show="copied" x-transition>Copied!</span>
-                                </button>
+                                <div class="overflow-x-auto w-full bg-black p-3 rounded-b-lg text-whiteShade flex-grow">
+                                    <pre><code x-ref="code" class="text-sm">{{  $codes[$index] }} </code></pre>
+                                </div>
+
                             </li>
                         </ul>
                     @endforeach
@@ -132,6 +139,57 @@
     
         </section>
 
+        {{-- FAQ --}}
+        <div class="w-full border-t border-lightShade dark:border-lightShade">
+            <section class="max-w-5xl mx-auto max-md:p-4 md:py-12">
+                <h1 class="text-3xl text-center font-semibold text-darkShade dark:text-whiteShade py-2 font-barlow mb-4">FAQ Section</h1>
+    
+                <div id="accordion-collapse" data-accordion="collapse" class="font-lato">
+                    <h2 id="accordion-collapse-heading-1">
+                        <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-darkShade dark:text-whiteShade border border-b-0 border-mediumShade dark:border-lightShade rounded-t-xl focus:ring-4 focus:ring-lightShade dark:focus:ring-mediumShade hover:bg-lightShade dark:hover:bg-black gap-3" data-accordion-target="#accordion-collapse-body-1" aria-expanded="true" aria-controls="accordion-collapse-body-1">
+                            <span class="font-semibold">What is ImageSizeify?</span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-collapse-body-1" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+                        <div class="p-5 border border-b-0 border-mediumShade dark:border-lightShade dark:bg-darkShade">
+                            <p class="mb-2 text-darkShade dark:text-whiteShade">ImageSizeify is a powerful tool that allows users to resize images to specific dimensions, supporting multiple image formats. It offers predefined widths to choose from, making it easy to scale images for different use cases.It also provides the code adapted to it so the user can simply copy and paste it where needed.</p>
+                        </div>
+                    </div>
+            
+                    <h2 id="accordion-collapse-heading-2">
+                        <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-darkShade dark:text-whiteShade border border-b-0 border-mediumShade dark:border-lightShade focus:ring-4 focus:ring-lightShade dark:focus:ring-mediumShade hover:bg-lightShade dark:hover:bg-black gap-3" data-accordion-target="#accordion-collapse-body-2" aria-expanded="false" aria-controls="accordion-collapse-body-2">
+                            <span class="font-semibold">How does ImageSizeify work?</span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-collapse-body-2" class="hidden" aria-labelledby="accordion-collapse-heading-2">
+                        <div class="p-5 border border-b-0 border-mediumShade dark:border-lightShade dark:bg-darkShade">
+                            <p class="mb-2 text-darkShade dark:text-whiteShade">ImageSizeify uses the Intervention Image library ( along with GD ) to handle image resizing. Users can upload images, select desired widths, and download the resized versions. The tool supports batch processing, allowing multiple images to be resized simultaneously.</p>
+                        </div>
+                    </div>
+            
+                    <h2 id="accordion-collapse-heading-3">
+                        <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-darkShade dark:text-whiteShade border border-mediumShade dark:border-lightShade focus:ring-4 focus:ring-lightShade dark:focus:ring-mediumShade hover:bg-lightShade dark:hover:bg-black gap-3" data-accordion-target="#accordion-collapse-body-3" aria-expanded="false" aria-controls="accordion-collapse-body-3">
+                            <span class="font-semibold">What are the benefits of using ImageSizeify?</span>
+                            <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                            </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-collapse-body-3" class="hidden" aria-labelledby="accordion-collapse-heading-3">
+                        <div class="p-5 border border-t-0 border-mediumShade dark:border-lightShade dark:bg-darkShade">
+                            <p class="mb-2 text-darkShade dark:text-whiteShade">ImageSizeify is designed to be user-friendly and efficient. It saves time by providing predefined widths and allows users to resize images in bulk. It also supports multiple image formats, making it versatile for various projects.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
     </div>
 </article>
 
@@ -148,7 +206,7 @@
                             //Drag images only
                             for( let file of files){
                                 if (!file.type.match('image.*')) {
-                                alert('only images supported')
+                                alert('Only jpeg & png images are supported')
                                 return  }
                             }
 

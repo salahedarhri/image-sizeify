@@ -7,6 +7,21 @@
      background-color: #4D869C;
 }
 
+/* scrollbar */
+::-webkit-scrollbar {
+     width: 2px;
+ }
+ 
+ ::-webkit-scrollbar-track {
+     background: #1e1e1e;
+     border-radius: 8px;  
+ }
+ 
+ ::-webkit-scrollbar-thumb {
+     background-color: #708871;
+     border-radius: 8px;
+ }
+
 /* lato-300 - latin */
 @font-face {
     font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */

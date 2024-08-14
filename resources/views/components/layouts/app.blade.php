@@ -5,14 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('icon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('icon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('icon/site.webmanifest') }}">
+
     <title>{{ $title ?? 'Image Sizeify' }}</title>
     @vite(['resources/css/app.css','resources/js/app.js'])
 
 </head>
-<body class=" bg-whiteShade dark:bg-darkShade antialiased">
-    <nav class="bg-whiteShade dark:bg-darkShade fixed w-full z-20 top-0 start-0 border-b border-lightShade  dark:border-mediumShade">
+<body class="bg-whiteShade dark:bg-darkShade antialiased">
+    <nav class="bg-whiteShade dark:bg-darkShade fixed w-full z-20 top-0 start-0 border-b border-lightShade dark:border-mediumShade font-barlow">
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-            <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <a href="{{ route('home') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
                 <img src="{{ asset('images/logo.png')}}" class="h-8 dark:invert" alt="logo">
                 <span class="self-center text-xl text-mediumShade font-semibold dark:text-lightShade">ImageSizeify</span>
             </a>
@@ -29,20 +34,30 @@
             </div>
             <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
             <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-lightShade rounded-lg bg-lightShade md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-transparent dark:bg-darkShade md:dark:bg-darkShade dark:border-darkShade">
-                <li><a href="#" class="block py-2 px-3 text-darkShade rounded hover:bg-lightShade md:hover:bg-transparent md:hover:text-mediumShade md:p-0 md:dark:hover:text-lightShade  dark:text-whiteShade dark:hover:bg-mediumShade dark:hover:text-lightShade md:dark:hover:bg-transparent dark:border-mediumShade">Home</a></li>
-                <li><a href="#" class="block py-2 px-3 text-darkShade rounded hover:bg-lightShade md:hover:bg-transparent md:hover:text-mediumShade md:p-0 md:dark:hover:text-lightShade  dark:text-whiteShade dark:hover:bg-mediumShade dark:hover:text-lightShade md:dark:hover:bg-transparent dark:border-mediumShade">About</a></li>
-                <li><a href="#" class="block py-2 px-3 text-darkShade rounded hover:bg-lightShade md:hover:bg-transparent md:hover:text-mediumShade md:p-0 md:dark:hover:text-lightShade  dark:text-whiteShade dark:hover:bg-mediumShade dark:hover:text-lightShade md:dark:hover:bg-transparent dark:border-mediumShade">Services</a></li>
-                <li><a href="#" class="block py-2 px-3 text-darkShade rounded hover:bg-lightShade md:hover:bg-transparent md:hover:text-mediumShade md:p-0 md:dark:hover:text-lightShade  dark:text-whiteShade dark:hover:bg-mediumShade dark:hover:text-lightShade md:dark:hover:bg-transparent dark:border-mediumShade">Contact</a></li>
+                <li><a wire:navigate href="{{ route('home') }}" class="block py-2 px-3 text-darkShade rounded hover:bg-lightShade md:hover:bg-transparent md:hover:text-mediumShade md:p-0 md:dark:hover:text-lightShade  dark:text-whiteShade dark:hover:bg-mediumShade dark:hover:text-lightShade md:dark:hover:bg-transparent dark:border-mediumShade">Home</a></li>
+                <li><a wire:navigate href="{{ route('api') }}" class="block py-2 px-3 text-darkShade rounded hover:bg-lightShade md:hover:bg-transparent md:hover:text-mediumShade md:p-0 md:dark:hover:text-lightShade  dark:text-whiteShade dark:hover:bg-mediumShade dark:hover:text-lightShade md:dark:hover:bg-transparent dark:border-mediumShade">API</a></li>
             </ul>
             </div>
         </div>
     </nav>
   
-    <main>
+    <main class="flex-1">
         {{ $slot }}
     </main>
 
     @stack('custom-scripts')
+
+    <footer class="bg-whiteShade rounded-t-lg shadow dark:bg-darkShade font-barlow">
+        <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
+            <span class="text-sm max-sm:text-center text-darkShade dark:text-whiteShade">© 2024 <a href="https://github.com/salahedarhri" class="hover:underline">Salah eddin ARHRIMAZ.</a>
+            </span>
+            <ul class="flex flex-wrap items-center mt-3 text-sm font-medium text-darkShade dark:text-whiteShade sm:mt-0">
+                <li><a wire:navigate href="{{ route('home') }}" class="hover:underline me-4 md:me-6">Home</a></li>
+                <li><a wire:navigate href="{{ route('api') }}" class="hover:underline me-4 md:me-6">API</a></li>
+            </ul>
+        </div>
+    </footer>
+
 
 </body>
 </html>
