@@ -1,6 +1,6 @@
 <article x-data="{ progress:''}" class="subpixel-antialiased">
     <div class="w-full mx-auto">
-        <section class="max-w-xl mx-auto flex flex-col items-center p-2 gap-1 ">
+        <section class="max-w-xl mx-auto flex flex-col items-center p-2 gap-1">
             <h1 class="text-3xl text-center font-semibold text-darkShade dark:text-whiteShade py-2 font-barlow mt-24">Image Sizeify</h1>
             <p class="text-center py-2 text-lg text-darkShade dark:text-whiteShade font-lato">Upload your photos, and we'll adapt them for your website where you'll download all the different formats of your pictures adapted to multiple devices.</p>
         </section>
@@ -39,7 +39,6 @@
                 </div> 
                 
                 @error('photos.*')<p class="text-red-600 dark:text-red-400 font-semibold text-sm p-1">{{ $message }}</p>@enderror
-                
                 <p wire:loading wire:target="photos" class="text-darkShade dark:text-lightShade font-semibold text-sm p-1">Chargement...<span x-text="progress"></span>%</p>
     
                 {{-- Pictures Informations --}}
@@ -141,8 +140,8 @@
 
         {{-- FAQ --}}
         <div class="w-full border-t border-lightShade dark:border-lightShade">
-            <section class="max-w-5xl mx-auto max-md:p-4 md:py-12">
-                <h1 class="text-3xl text-center font-semibold text-darkShade dark:text-whiteShade py-2 font-barlow mb-4">FAQ Section</h1>
+            <section class="max-w-5xl mx-auto max-lg:p-4 md:py-12">
+                <h1 class="text-2xl text-center font-semibold text-darkShade dark:text-whiteShade py-2 font-barlow mb-4">FAQ Section</h1>
     
                 <div id="accordion-collapse" data-accordion="collapse" class="font-lato">
                     <h2 id="accordion-collapse-heading-1">
@@ -196,26 +195,26 @@
 {{-- Drag & Drop functionality --}}
 @push('custom-scripts')
     <script>
-            function drop_file_component() {
-                return {
-                    droppingFile: false,
-                    handleFileDrop(e) {
-                        if (event.dataTransfer.files.length > 0) {
-                            const files = e.dataTransfer.files;
+        function drop_file_component() {
+            return {
+                droppingFile: false,
+                handleFileDrop(e) {
+                    if (event.dataTransfer.files.length > 0) {
+                        const files = e.dataTransfer.files;
 
-                            //Drag images only
-                            for( let file of files){
-                                if (!file.type.match('image.*')) {
-                                alert('Only jpeg & png images are supported')
-                                return  }
-                            }
-
-                            @this.uploadMultiple('photos', files,
-                                (uploadedFilename) => {}, () => {}, (event) => {}
-                            )
+                        //Drag images only
+                        for( let file of files){
+                            if (!file.type.match('image.*')) {
+                            alert('Only images are supported')
+                            return  }
                         }
+
+                        @this.uploadMultiple('photos', files,
+                            (uploadedFilename) => {}, () => {}, (event) => {}
+                        )
                     }
-                };
-            }
+                }
+            };
+        }
     </script>
 @endpush

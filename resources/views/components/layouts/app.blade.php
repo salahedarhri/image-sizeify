@@ -47,11 +47,11 @@
 
     @stack('custom-scripts')
 
-    <footer class="bg-whiteShade rounded-t-lg shadow dark:bg-darkShade font-barlow">
+    <footer class="bg-lightShade rounded-t-lg shadow-t-lg dark:shadow-lightShade dark:bg-mediumShade font-barlow max-w-7xl mx-auto max-md:text-center">
         <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
-            <span class="text-sm max-sm:text-center text-darkShade dark:text-whiteShade">© 2024 <a href="https://github.com/salahedarhri" class="hover:underline">Salah eddin ARHRIMAZ.</a>
+            <span class="text-sm font-semibold text-darkShade dark:text-whiteShade">© 2024 <a href="https://github.com/salahedarhri" class="hover:underline">Salah eddin ARHRIMAZ.</a>
             </span>
-            <ul class="flex flex-wrap items-center mt-3 text-sm font-medium text-darkShade dark:text-whiteShade sm:mt-0">
+            <ul class="flex flex-wrap max-md:justify-center items-center mt-3 text-sm font-medium text-darkShade dark:text-whiteShade md:mt-0">
                 <li><a wire:navigate href="{{ route('home') }}" class="hover:underline me-4 md:me-6">Home</a></li>
                 <li><a wire:navigate href="{{ route('api') }}" class="hover:underline me-4 md:me-6">API</a></li>
             </ul>
