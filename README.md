@@ -43,4 +43,18 @@ To use Image Sizeify, Start the local development server in the bash terminal wi
 php artisan serve 
 ```
 
+## Screenshots
+
+<img src="https://github.com/salahedarhri/image-sizeify/blob/main/home-light.png" width="100%" alt="Image Sizeify Home">
+<img src="https://github.com/salahedarhri/image-sizeify/blob/main/home.png" width="100%" alt="Image Sizeify Home Dark">
+<img src="https://github.com/salahedarhri/image-sizeify/blob/main/images-light.png" width="100%" alt="Image Sizeify Images">
+<img src="https://github.com/salahedarhri/image-sizeify/blob/main/images.png" width="100%" alt="Image Sizeify Images Dark">
+<img src="https://github.com/salahedarhri/image-sizeify/blob/main/donwload-light.png" width="100%" alt="Image Sizeify Download">
+<img src="https://github.com/salahedarhri/image-sizeify/blob/main/download.png" width="100%" alt="Image Sizeify Donwload Dark">
+<img src="https://github.com/salahedarhri/image-sizeify/blob/main/downloaded-light.png" width="100%" alt="Image Sizeify Downloaded">
+<img src="https://github.com/salahedarhri/image-sizeify/blob/main/downloaded.png" width="100%" alt="Image Sizeify Downloaded Dark">
+
+
+
+
 
