@@ -39,8 +39,8 @@ ImageSizeify is a powerful tool that allows users to resize images to specific d
 ## Usage
 
 To use Image Sizeify, Start the local development server in the bash terminal with :
-    ```bash  
-    php artisan serve 
-    ```
+```bash
+php artisan serve 
+```
 
 
